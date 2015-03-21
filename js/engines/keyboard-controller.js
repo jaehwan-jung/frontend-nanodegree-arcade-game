@@ -10,7 +10,7 @@
         this.onRight = [];
         this.onUp = [];
         this.onDown = [];
-        initialize.call(this);
+        initialize(this);
     };
 
     function runAllCallbacksFn(callbacks) {
@@ -21,12 +21,12 @@
         };
     }
 
-    function initialize() {
-        var keyboardHandler = new Kibo(window);
+    function initialize(keyboardController) {
+        var keyboardHandler = new global.Kibo(window);
 
-        keyboardHandler.down(['left'], runAllCallbacksFn(this.onLeft));
-        keyboardHandler.down(['right'], runAllCallbacksFn(this.onRight));
-        keyboardHandler.down(['up'], runAllCallbacksFn(this.onUp));
-        keyboardHandler.down(['down'], runAllCallbacksFn(this.onDown));
+        keyboardHandler.down(['left'], runAllCallbacksFn(keyboardController.onLeft));
+        keyboardHandler.down(['right'], runAllCallbacksFn(keyboardController.onRight));
+        keyboardHandler.down(['up'], runAllCallbacksFn(keyboardController.onUp));
+        keyboardHandler.down(['down'], runAllCallbacksFn(keyboardController.onDown));
     }
 })(window);

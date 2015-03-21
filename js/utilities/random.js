@@ -11,6 +11,6 @@
 
     module.Random = {
         getInteger: getInteger
-    }
+    };
 
-}(this));
+}(window));

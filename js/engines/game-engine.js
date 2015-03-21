@@ -6,22 +6,26 @@
 (function (global) {
     'use strict';
 
-    var DEFAULT_GAME_LEVEL = 1;
+    var map;
+    var player;
+    var npcs;
+    var state;
+    var level;
 
     /* Initializes with required parameters
      * and sets the default variables
      */
-    function initialize(map, player) {
-        this.map = map;
-        this.player = player;
-        this.npcs = global.NpcGenerator.npcCollection;
-        this.state = EngineStateEnum.NOT_STARTED;
-        this.level = DEFAULT_GAME_LEVEL;
+    function initialize(gameMap, thePlayer) {
+        map = gameMap;
+        player = thePlayer;
+        npcs = global.NpcGenerator.getNpcCollection();
+        state = global.EngineStateEnum.NOT_STARTED;
+        level = 1;
     }
 
     // Returns true if the engine has started
     function isStarted() {
-        return this.state !== EngineStateEnum.STARTED;
+        return state !== global.EngineStateEnum.STARTED;
     }
 
     // Iterates through the given array and invoke update
@@ -35,11 +39,16 @@
      * he/she will be reset. Otherwise, updates all npcs including the player
      */
     function update() {
-        if (isStarted.call(this))
+        if (isStarted()) {
             return;
+        }
 
-        this.player.update();
-        this.player.isSafe ? this.reset() : updateAll(this.npcs);
+        player.update();
+        if (player.isSafe) {
+            reset();
+        } else {
+            updateAll(npcs);
+        }
     }
 
     /* If the collided enemy is not a heart, it stops the game
@@ -47,12 +56,13 @@
      * A heart item is considered non-collidable as explained in README.md
      */
     function handleEnemyCollision(enemy) {
-        if (enemy.image === Resources.get(AppResources.item.heart))
+        if (enemy.image === global.Resources.get(global.AppResources.item.heart)) {
             return;
+        }
 
-        this.stop();
+        stop();
         global.NpcGenerator.stop();
-        RestartDialog.open();
+        global.RestartDialog.open();
     }
 
     // Calls onCollision for the given item
@@ -63,63 +73,82 @@
     // Provides a function for handling collisions for NPCs.
     function handleCollisionFn(npc) {
         return function () {
-            (npc instanceof AutomatedSpirit) ? handleEnemyCollision.call(this, npc) : handleItemCollision(npc);
-        }.bind(this);
+            if (npc instanceof global.AutomatedSpirit) {
+                handleEnemyCollision(npc);
+            } else {
+                handleItemCollision(npc);
+            }
+        };
     }
 
     // Checks if a NPC is collided with the player and handles it if so
     function checkAndHandleCollisions() {
-        this.npcs.forEach(function (npc) {
-            if (!npc.isCollided(this.player))
+        npcs.forEach(function (npc) {
+            if (!npc.isCollided(player)) {
                 return;
+            }
 
-            global.requestAnimationFrame(handleCollisionFn.call(this, npc));
-        }.bind(this));
+            global.requestAnimationFrame(handleCollisionFn(npc));
+        });
     }
 
     // Renders the graphics for NPCs, player, and map
     function render() {
-        if (this.state !== EngineStateEnum.STARTED)
+        if (state !== global.EngineStateEnum.STARTED) {
             return;
+        }
 
-        this.map.render();
-        this.player.render();
-        this.npcs.forEach(function (npc) {
+        map.render();
+        player.render();
+        npcs.forEach(function (npc) {
             npc.render();
         });
 
-        checkAndHandleCollisions.call(this);
+        checkAndHandleCollisions();
     }
 
     // Start or resume the game
     function start() {
-        this.state = EngineStateEnum.STARTED;
-        this.npcs.forEach(function (npc) {
-            (npc instanceof AutomatedSpirit) ? npc.start() : npc.startTimer();
+        state = global.EngineStateEnum.STARTED;
+        npcs.forEach(function (npc) {
+            if (npc instanceof global.AutomatedSpirit) {
+                npc.start();
+            } else {
+                npc.startTimer();
+            }
         });
     }
 
     // Stop or pause the game
     function stop() {
-        this.state = EngineStateEnum.STOPPED;
-        this.npcs.forEach(function (npc) {
-            (npc instanceof AutomatedSpirit) ? npc.stop() : npc.stopTimer();
+        state = global.EngineStateEnum.STOPPED;
+        npcs.forEach(function (npc) {
+            if (npc instanceof global.AutomatedSpirit) {
+                npc.stop();
+            } else {
+                npc.stopTimer();
+            }
         });
     }
 
     // Resets the game and increment the level (difficulty)
     function reset() {
         global.NpcGenerator.stepUp();
-        this.player.reset();
-        this.level++;
+        player.reset();
+        level++;
+    }
+
+    function getCurrentLevel() {
+        return level;
     }
 
     global.GameEngine = {
+        getCurrentLevel: getCurrentLevel,
         initialize: initialize,
         update: update,
         render: render,
         start: start,
         stop: stop,
         reset: reset
-    }
+    };
 })(window);

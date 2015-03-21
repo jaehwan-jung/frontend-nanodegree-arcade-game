@@ -1,12 +1,12 @@
 /* app-resources.js
  * Represents a collections of all images
  */
-(function (module) {
+(function (global) {
     'use strict';
 
     var imageFolder = 'images/';
 
-    module.AppResources = {
+    global.AppResources = {
         block: {
             grass: imageFolder + 'grass-block.png',
             stone: imageFolder + 'stone-block.png',
@@ -38,4 +38,4 @@
             restart: imageFolder + 'restart-button.png'
         }
     };
-})(this);
+})(window);

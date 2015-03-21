@@ -1,7 +1,7 @@
 /* application.js
  * This is the main script that sets up everything
  */
-(function () {
+(function (global) {
     'use strict';
 
     var canvas;
@@ -10,12 +10,12 @@
 
     // Loads all image resources
     function initializeResources() {
-        for (var resourceType in AppResources) {
-            if (AppResources.hasOwnProperty(resourceType)) {
-                var appResourceType = AppResources[resourceType];
+        for (var resourceType in global.AppResources) {
+            if (global.AppResources.hasOwnProperty(resourceType)) {
+                var appResourceType = global.AppResources[resourceType];
                 for (var resource in  appResourceType) {
                     if (appResourceType.hasOwnProperty(resource)) {
-                        Resources.load(appResourceType[resource]);
+                        global.Resources.load(appResourceType[resource]);
                     }
                 }
             }
@@ -32,10 +32,10 @@
 
     // Creates the map
     function initializeMap() {
-        var grass = Resources.get(AppResources.block.grass);
-        var stone = Resources.get(AppResources.block.stone);
-        var water = Resources.get(AppResources.block.water);
-        var selector = Resources.get(AppResources.block.selector);
+        var grass = global.Resources.get(global.AppResources.block.grass);
+        var stone = global.Resources.get(global.AppResources.block.stone);
+        var water = global.Resources.get(global.AppResources.block.water);
+        var selector = global.Resources.get(global.AppResources.block.selector);
         var matrix = [
             [water, water, water, water, water, water, water, water, water],
             [stone, stone, stone, stone, stone, stone, stone, stone, stone],
@@ -56,42 +56,41 @@
         initializeCanvas();
         initializeMap();
 
-        var keyboardController = new KeyboardController();
-        var playerImage = Resources.get(AppResources.player.boy);
+        var keyboardController = new global.KeyboardController();
+        var playerImage = global.Resources.get(global.AppResources.player.boy);
         var initialPosition = {x: Math.floor(map.dimension.columnCount / 2), y: Math.floor(map.dimension.rowCount - 1)};
-        player = new Player(map, playerImage, keyboardController, initialPosition);
+        player = new global.Player(map, playerImage, keyboardController, initialPosition);
 
-        NpcGenerator.initialize(map, player);
-        GameEngine.initialize(map, player);
-        Gamepad.initialize(canvas, map);
-
-        InformationBoard.initialize(canvas, map);
+        global.NpcGenerator.initialize(map, player);
+        global.GameEngine.initialize(map, player);
+        global.Gamepad.initialize(canvas, map);
+        global.InformationBoard.initialize(canvas, map);
     }
 
     // This is the main loop of the game where everything is updated and rendered
     function mainLoop() {
-        GameEngine.update();
-        GameEngine.render();
-        InformationBoard.display();
-        Gamepad.display();
+        global.GameEngine.update();
+        global.GameEngine.render();
+        global.InformationBoard.display();
+        global.Gamepad.display();
         window.requestAnimationFrame(mainLoop);
     }
 
     // Starts the game by first asking the user to select his/her character
     function start() {
-        CharacterSelectionDialog.open();
+        global.CharacterSelectionDialog.open();
         map.render();
-        CharacterSelectionDialog.onClose = function () {
-            player.setImage(CharacterSelectionDialog.getSelectedPlayer());
+        global.CharacterSelectionDialog.onClose.push(function () {
+            player.setImage(global.CharacterSelectionDialog.getSelectedPlayer());
             player.render();
             mainLoop();
-        };
+        });
     }
 
     initializeResources();
-    Resources.onReady(function () {
+    global.Resources.onReady(function () {
         initialize();
         start();
     });
 
-})();
+})(window);

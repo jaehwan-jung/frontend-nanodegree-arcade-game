@@ -40,7 +40,7 @@
                 x: column * this.dimension.blockSize.width,
                 y: row * this.dimension.blockSize.height
             }
-        }
+        };
     };
 
     // Renders the map
@@ -56,4 +56,4 @@
         }
     };
 
-})(this);
+})(window);

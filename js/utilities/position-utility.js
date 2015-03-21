@@ -35,7 +35,7 @@
             maxX: x + width,
             minY: y,
             maxY: y + height
-        }
+        };
     }
 
     module.PositionUtility = {
@@ -44,4 +44,4 @@
         areWithinTolerance: areWithinTolerance
     };
 
-})(this);
+})(window);

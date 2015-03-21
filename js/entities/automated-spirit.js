@@ -4,7 +4,8 @@
  * Subclass of Spirit
  */
 (function (global) {
-    
+    'use strict';
+
     global.AutomatedSpirit = function (map, image, direction, speed) {
         global.Spirit.call(this, map, image);
         this.direction = direction;
@@ -17,22 +18,25 @@
 
     // Starts moving the spirit if it is active
     global.AutomatedSpirit.prototype.start = function () {
-        if (this.state === SpiritStatesEnum.ACTIVE)
+        if (this.state === global.SpiritStatesEnum.ACTIVE) {
             return;
+        }
 
-        if (this.lastTimeInMilliSeconds === undefined)
+        if (this.lastTimeInMilliSeconds === undefined) {
             this.lastTimeInMilliSeconds = Date.now();
+        }
 
-        this.state = SpiritStatesEnum.ACTIVE;
+        this.state = global.SpiritStatesEnum.ACTIVE;
     };
 
     // Stops moving the spirit if it is active
     global.AutomatedSpirit.prototype.stop = function () {
-        if (this.state !== SpiritStatesEnum.ACTIVE)
+        if (this.state !== global.SpiritStatesEnum.ACTIVE) {
             return;
+        }
 
         this.stoppedTime = Date.now();
-        this.state = SpiritStatesEnum.INACTIVE;
+        this.state = global.SpiritStatesEnum.INACTIVE;
     };
 
     // Calculates the distance moved from the last time the spirit was updated & rendered
@@ -77,4 +81,4 @@
 
         return getNewPosition(this.direction, position.x, position.y, deltaPosition);
     };
-}(this));
+}(window));

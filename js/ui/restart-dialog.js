@@ -27,6 +27,6 @@
 
     global.RestartDialog = {
         open: open
-    }
+    };
 
 })(this);

@@ -10,7 +10,7 @@
      */
     global.Player = function (map, image, controller, initialPosition) {
         global.Spirit.call(this, map, image);
-        var boundaryRectangle = PositionUtility.getRectangle(0, 0, map.dimension.columnCount - 1, map.dimension.rowCount - 1);
+        var boundaryRectangle = global.PositionUtility.getRectangle(0, 0, map.dimension.columnCount - 1, map.dimension.rowCount - 1);
         this.setMovementBoundary(boundaryRectangle);
         this.isSafe = false;
         this.initialPosition = initialPosition;
@@ -25,16 +25,16 @@
     // Hooks up the player's movement control to the given controller
     function initializeController(player, controller) {
         controller.onLeft.push(function () {
-            player.move(DirectionsEnum.LEFT);
+            player.move(global.DirectionsEnum.LEFT);
         });
         controller.onRight.push(function () {
-            player.move(DirectionsEnum.RIGHT);
+            player.move(global.DirectionsEnum.RIGHT);
         });
         controller.onUp.push(function () {
-            player.move(DirectionsEnum.UP);
+            player.move(global.DirectionsEnum.UP);
         });
         controller.onDown.push(function () {
-            player.move(DirectionsEnum.DOWN);
+            player.move(global.DirectionsEnum.DOWN);
         });
     }
 
@@ -69,7 +69,7 @@
      * which is indicated by the variable isSafe
      */
     global.Player.prototype.update = function () {
-        this.isSafe = this.position.y == 0;
+        this.isSafe = this.position.y === 0;
     };
 
     // Renders the player's graphics
@@ -80,4 +80,4 @@
         var playerHeight = this.map.dimension.blockSize.height * 1.8;
         context.drawImage(this.image, block.origin.x, block.origin.y, playerWidth, playerHeight);
     };
-})(this);
+})(window);
